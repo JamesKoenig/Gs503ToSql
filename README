@@ -1,3 +1,7 @@
 Software to interface between Gs503 phones and SQL
 
 Licensed under the MIT license, see the LICENSE file distributed with this source
+
+TODO:
+    Having each connected device be on its own thread is a bit wasteful, for scalability
+    the code should move to libevent at some point in the future

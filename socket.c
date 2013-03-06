@@ -11,7 +11,7 @@
 #include <arpa/inet.h>
 
 //automatically gets ipv6 or ipv4 information
-void * get_in_addr(struct sockaddr *sa)
+void * getInAddr(struct sockaddr *sa)
 {
     if(sa->sa_family == AF_INET)
     {
