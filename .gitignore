@@ -1,0 +1,10 @@
+#git ignore file
+
+#do not upload vim ctags
+tags
+
+#do not upload object files
+*.o
+
+#do not include debugging sources
+maintest.c
