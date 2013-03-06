@@ -1,6 +1,6 @@
 /*
- * packetSQL -- A library to turn packets on Chinese
- *  cell phones into useable data, and then insert
+ * packetSQL -- A library to turn packets on
+ *  cell phones into useable data, and then inserts
  *  that data on a MySQL SQL database
  *
  * Right now, we're just doing raw packet data, because as
@@ -11,7 +11,8 @@
 
 /*
  * Packet Parser
- * input: a 30 byte packet
+ * input: a 30 byte packet -- that's not a hard limit,
+ * but it's what I tested it with.
  */
 void mysql_push_packet(char* packet){
     
@@ -33,8 +34,8 @@ void mysql_push_packet(char* packet){
     /* Sanitize input */
     mysql_real_escape_string(conn, sanitized, packet, strlen(packet));
 
-    qlen = sprintf(query, "INSERT INTO packets(contents) VALUES('%s');", sanitized);
-    
+    /*Build query, get query length*/
+    qlen = sprintf(query, "INSERT INTO packets(contents) VALUES('%s');", sanitized);    
     printf("Query: %s\n", query);
     
     /* Execute query */
