@@ -8,11 +8,12 @@ typedef union ctlVals_u ctlVals;
 
 /* Encapsulates all server information, so that it can be easily accessible           *
  */
-typedef struct Sever_s
+typedef struct Server_s
 {
     ctlVals controls;           //server control flags
     unsigned short port;        //port the server is listening on
-    FILE * errOut;              //
+    int socket;                 //file descriptor to the socket
+    FILE * errOut;              //where the server is to give error output
     pthread_t serverThread;     //the thread the server is on 
     pthread_mutex_t servMutex;  //prevent race conditions within this struct
     //TODO
