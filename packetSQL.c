@@ -48,11 +48,11 @@ void mysql_push_packet(char* packet){
 }
 
 /* FOR TESTING ONLY */
-int main(){
+/*int main(){
     printf("\n\n");
     char packet[30] = "123456789012345678901234567890";
     mysql_push_packet(packet);
     printf("Done!");
     printf("\n\n");
     return 0;
-}
+}*/
