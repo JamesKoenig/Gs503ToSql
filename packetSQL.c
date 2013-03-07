@@ -21,7 +21,7 @@ void mysql_push_packet(char* packet){
     /* establish connection */
     MYSQL *conn;
     conn = mysql_init(NULL);
-    if(!mysql_real_connect(conn, "localhost", "root", "", "ctest", 0, NULL, 0)){
+    if(!mysql_real_connect(conn, SQLSERV, SQLUSER, SQLPASS, SQLDATB, SQLPORT, NULL, 0)){
         printf("Error: could not connect to the database\n");
         mysql_close(conn);
         return;

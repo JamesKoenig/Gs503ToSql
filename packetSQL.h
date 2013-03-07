@@ -1,9 +1,10 @@
 /**
  * packetSQL.h
  */
-#include <mysql/my_global.h>
-#include <mysql/mysql.h>
+#include <my_global.h>
+#include <mysql.h>
 #include <stdio.h>
 #include <string.h>
+#include "config.h"
 
 void mysql_push_packet(char *packet);
