@@ -1,36 +1,38 @@
-#include "server.h"
+#include <stdlib.h>
 #include "serverFns.h"
+#include "server.h"
 #include "thread.h"
 #include "socket.h"
+#include "servMain.h"
 
 unsigned servOn(Server * srv)
 {
-    return srv->ctlVals.vals.power = 1;
+    return srv->controls.vals.power = 1;
 }
 
 unsigned servOff(Server * srv)
 {
-    return srv->ctlVals.vals.power = 0;
+    return srv->controls.vals.power = 0;
 }
 
 unsigned servStatus(Server * srv)
 {
-    return srv->ctlVals.vals.power;
+    return srv->controls.vals.power;
 }
 
 void * serverThread(void * args)
 {
     Server * me = (Server *) args;
 
-    while (servStatus(me))
+    while(servStatus(me))
     {
-        //Do nothing
+        servLoop(me);
     }
-    //for now this doesn't return anything
+
     return NULL;
 }
 
-Server * makeServer(int port)
+Server * makeServer(unsigned short port)
 {
     //start with the empty server
     Server * srv = NULL;
@@ -39,10 +41,13 @@ Server * makeServer(int port)
     if(!srv) return NULL;
     
     servOff(srv);
-    srv->port   = port;
-    srv->socket = listenOnPort(port);
-    srv->errOut = stderr;
+    srv->socket       = listenOnPort(port);
+    srv->port         = port;
+    srv->errOut       = stderr;
+    srv->serverThread = (pthread_t) 0;
     
+    if(!(srv->socket)) return NULL;
+
     return srv;
 }
 
@@ -69,6 +74,17 @@ int stopServer(Server * srv)
     //turn off the server
     servOff(srv);
     //join with the server thread (wait for it to die)
-    pthread_join(srv->serverThread);
+    //discard its output
+    pthread_join(srv->serverThread, NULL);
     return 1;
 }
+
+void delServer(Server * srv)
+{
+    //make sure to stop the server thread
+    stopServer(srv);
+    close(srv->socket);
+    free(srv);
+    return;
+}
+

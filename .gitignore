@@ -5,6 +5,10 @@ tags
 
 #do not upload object files
 *.o
+*.gch
 
 #do not include debugging sources
 maintest.c
+
+#do not include vim swapfiles
+*.swp
