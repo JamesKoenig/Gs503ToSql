@@ -2,6 +2,7 @@
 
 /* (default) program options */
 #define SERVPORT 27183
+#define QUEUELEN 32
 
 /* SQL options */
 #define SQLSERV "localhost"

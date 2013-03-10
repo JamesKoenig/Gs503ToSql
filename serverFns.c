@@ -3,16 +3,33 @@
 #include "server.h"
 #include "thread.h"
 #include "socket.h"
-#include "servMain.h"
+#include "servLoop.h"
+#include "config.h"
+
+unsigned servSet(Server * srv, unsigned val)
+{
+    pthread_mutex_lock(&(srv->servMutex))
+    switch(val)
+    {
+        case 1:
+            srv->controls.vals.power = 1;
+            break;
+        default:
+            srv->controls.vals.power = 0;
+            break;
+    }
+    pthread_mutex_unlock(&(srv->servMutex));
+    return srv->controls.vals.power;
+}
 
 unsigned servOn(Server * srv)
 {
-    return srv->controls.vals.power = 1;
+    return servSet(srv, 1);
 }
 
 unsigned servOff(Server * srv)
 {
-    return srv->controls.vals.power = 0;
+    return servSet(srv, 0);
 }
 
 unsigned servStatus(Server * srv)
@@ -24,6 +41,15 @@ void * serverThread(void * args)
 {
     Server * me = (Server *) args;
 
+    //listen on the given port
+    if(listen(me->socket, me->queueLen) == -1)
+    {
+        perror("listen");
+        servOff(me);
+        return NULL;
+    }
+
+    //all clear, run the main loop function
     while(servStatus(me))
     {
         servLoop(me);
@@ -32,23 +58,41 @@ void * serverThread(void * args)
     return NULL;
 }
 
+/** 
+ *
+ * \brief returns an allocated server object
+ * \args the value of a server object for setup
+ */
+Server * advMakeServ(Server setup)
+{
+    Server * srv = malloc(sizeof(Server));
+    if(!srv) return NULL;
+    
+    srv->controls    = setup.controls;
+    srv->socket      = setup.socket;
+    srv->port        = setup.port;
+//    srv->errOut      = setup.errOut;
+    srv->serverThread = setup.serverThread;
+    srv->queueLen     = setup.queueLen;
+
+    return srv;
+}
+
 Server * makeServer(unsigned short port)
 {
     //start with the empty server
-    Server * srv = NULL;
+    Server srv;
 
-    srv = malloc(sizeof(srv));
-    if(!srv) return NULL;
+    servOff(&srv);
+    srv.socket       = listenOnPort(port);
+    srv.port         = port;
+    //srv.errOut       = stderr;
+    srv.serverThread = (pthread_t) 0;
+    srv.queueLen     = QUEUELEN;
     
-    servOff(srv);
-    srv->socket       = listenOnPort(port);
-    srv->port         = port;
-    srv->errOut       = stderr;
-    srv->serverThread = (pthread_t) 0;
-    
-    if(!(srv->socket)) return NULL;
+    if(!(srv.socket)) return NULL;
 
-    return srv;
+    return advMakeServ(srv);
 }
 
 int startServer(Server * srv)

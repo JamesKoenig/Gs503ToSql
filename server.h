@@ -24,12 +24,14 @@ typedef union ctlVals_u
  */
 typedef struct Server_s
 {
-    ctlVals controls;           //server control flags
     unsigned short port;        //port the server is listening on
     int socket;                 //file descriptor to the socket
-    FILE * errOut;              //where the server is to give error output
+    int queueLen;               //max queue length
+//    FILE * errOut;              //where the server is to give error output
+    ctlVals controls;           //server control flags
     pthread_t serverThread;     //the thread the server is on 
     pthread_mutex_t servMutex;  //prevent race conditions within this struct
+    Connection * conList;       //array of connections of size (queueLen * Connection)
     //TODO
 } Server;
 
