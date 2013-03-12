@@ -26,6 +26,7 @@ typedef struct Server_s
 {
     unsigned short port;        //port the server is listening on
     int socket;                 //file descriptor to the socket
+    int connections;            //number of sockets
     int queueLen;               //max queue length
 //    FILE * errOut;              //where the server is to give error output
     ctlVals controls;           //server control flags

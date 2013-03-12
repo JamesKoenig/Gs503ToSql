@@ -1,4 +1,5 @@
 #include "server.h"
+#include "serverFns.h"
 #include "servLoop.h"
 
 int servLoop(Server * srv)
@@ -16,6 +17,10 @@ int servLoop(Server * srv)
         perror("accept");
         //return to the function that calls the loop
         return 0;
+    }
+    else
+    {
+        addSocket
     }
     return 1;
 }

@@ -1,6 +1,7 @@
 #ifndef _SERVER_FUNCTIONS_HEADER_
 #define _SERVER_FUNCTIONS_HEADER_
 #include "server.h"
+#include "connection.h"
 
 /* creates a new server object listening on the given port */
 Server * makeServer(unsigned short port);
@@ -12,5 +13,9 @@ int startServer(Server * srv);
 int stopServer(Server * srv);
 
 void delServer(Server * srv);
+
+int addConnection(Server * srv, Connection * con);
+
+int reapConnections(Server * srv);
 
 #endif /* _SERVER_FUNCTIONS_HEADER_ */

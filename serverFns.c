@@ -3,6 +3,8 @@
 #include "server.h"
 #include "thread.h"
 #include "socket.h"
+#include "connection.h"
+#include "connectionFns.h"
 #include "servLoop.h"
 #include "config.h"
 
@@ -37,6 +39,21 @@ unsigned servStatus(Server * srv)
     return srv->controls.vals.power;
 }
 
+void delConnections(Server * srv)
+{
+    Connection * current;
+    if(srv->conList != NULL)
+    {
+        current = srv->conList;
+        srv->conList = current->next;
+        //stop the connection thread
+        delConnection(current);
+        
+        return delConnections(srv);
+    }
+    else return;
+}
+
 void * serverThread(void * args)
 {
     Server * me = (Server *) args;
@@ -54,6 +71,8 @@ void * serverThread(void * args)
     {
         servLoop(me);
     }
+
+    delConnections(me);
 
     return NULL;
 }
@@ -74,6 +93,7 @@ Server * advMakeServ(Server setup)
 //    srv->errOut      = setup.errOut;
     srv->serverThread = setup.serverThread;
     srv->queueLen     = setup.queueLen;
+    srv->conList      = setup.conList;
 
     return srv;
 }
@@ -86,10 +106,11 @@ Server * makeServer(unsigned short port)
     servOff(&srv);
     srv.socket       = listenOnPort(port);
     srv.port         = port;
-    //srv.errOut       = stderr;
+    //srv.errOut     = stderr;
     srv.serverThread = (pthread_t) 0;
     srv.queueLen     = QUEUELEN;
-    
+    srv.conList      = NULL;
+
     if(!(srv.socket)) return NULL;
 
     return advMakeServ(srv);
