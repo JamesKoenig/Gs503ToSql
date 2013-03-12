@@ -28,8 +28,8 @@ void mysql_push_packet(char* packet){
     }
     
     /* Create query */
-    char query[255];
-    char sanitized[255];
+    char query[BUFFLEN];
+    char sanitized[BUFFLEN];
     
     /* Sanitize input */
     mysql_real_escape_string(conn, sanitized, packet, strlen(packet));

@@ -10,3 +10,6 @@
 #define SQLPASS ""
 #define SQLDATB "ctest"
 #define SQLPORT 0
+
+/* buffer length is the same across all files */
+#define BUFFLEN 255
