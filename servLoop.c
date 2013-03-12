@@ -8,7 +8,7 @@ int servLoop(Server * srv)
     struct sockaddr_storage conn_addr;
     socklen_t sin_size = sizeof(struct sockaddr_storage);
     //accept an incoming connection (since the socket is set to non-blocking)
-    //it waits until a connection is formed
+    //it waits until a connection is formed, this, potentially, might delay shutdown
     thread_fd = accept(srv->socket, (struct sockaddr *)&conn_addr, &sin_size);
     //if the thread has failed to be spawned
     if(!new_fd == -1)
@@ -20,7 +20,9 @@ int servLoop(Server * srv)
     }
     else
     {
-        addSocket
+        addConnection(srv, makeConnection(thread_fd));
     }
+
+    reapConnections(srv);
     return 1;
 }

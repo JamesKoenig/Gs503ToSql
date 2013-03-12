@@ -91,9 +91,11 @@ Server * advMakeServ(Server setup)
     srv->socket      = setup.socket;
     srv->port        = setup.port;
 //    srv->errOut      = setup.errOut;
-    srv->serverThread = setup.serverThread;
+    srv->serverThread = (pthread_t) 0;
     srv->queueLen     = setup.queueLen;
     srv->conList      = setup.conList;
+
+    pthread_mutex_init(servMutex, NULL);
 
     return srv;
 }
@@ -150,6 +152,16 @@ void delServer(Server * srv)
     stopServer(srv);
     close(srv->socket);
     free(srv);
+    return;
+}
+
+void addConnection(Server * srv, Connection * con)
+{
+    if(con)
+    {
+            con->next = srv->conList;
+            srv->conList = con;
+    }
     return;
 }
 

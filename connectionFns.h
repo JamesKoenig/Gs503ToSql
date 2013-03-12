@@ -5,4 +5,8 @@
 
 Connection * makeConnection(int socket);
 
+void stopConnection(Connection * con);
+
+void delConnection(Connection * con);
+
 #endif /* _CONNECTION_FUNCTIONS_HEADER_ */
