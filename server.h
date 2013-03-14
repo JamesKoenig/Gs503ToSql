@@ -1,6 +1,7 @@
 #ifndef _SERVER_HEADER_
 #define _SERVER_HEADER_
 
+#include "connection.h"
 #include <pthread.h>
 #include <stdio.h>
 
@@ -33,7 +34,6 @@ typedef struct Server_s
     pthread_t serverThread;     //the thread the server is on 
     pthread_mutex_t servMutex;  //prevent race conditions within this struct
     Connection * conList;       //array of connections of size (queueLen * Connection)
-    //TODO
 } Server;
 
 #endif /* _SERVER_HEADER_ */

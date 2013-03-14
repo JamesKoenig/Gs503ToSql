@@ -5,7 +5,7 @@
 
 //returns the proper (ipv6 or 4) address
 //from a given socket address
-void *  getInAddr(struct sockaddr * saddr);
+void * getInAddr(struct sockaddr * sa);
 
 //returns a socket on success, 0 on failure
 //just remember to close() it

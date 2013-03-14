@@ -14,8 +14,8 @@ int stopServer(Server * srv);
 
 void delServer(Server * srv);
 
-int addConnection(Server * srv, Connection * con);
+void addConnection(Server * srv, Connection * con);
 
-int reapConnections(Server * srv);
+void reapConnections(Server * srv);
 
 #endif /* _SERVER_FUNCTIONS_HEADER_ */

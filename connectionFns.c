@@ -1,4 +1,5 @@
 #include <stdio.h>          //for perror
+#include <stdlib.h>
 #include "connectionFns.h"
 #include "connection.h"
 #include "thread.h"
@@ -7,13 +8,13 @@
 void stopConnection(Connection * con)
 {
     con->status.is_alive = 0;
-    pthread_join(con->thread);
+    pthread_join(con->thread, NULL);
     return;
 }
 
 void delConnection(Connection * con)
 {
-    stopConnection(Connection * con);
+    stopConnection(con);
     close(con->socket);
     free(con);
     return;
@@ -24,7 +25,7 @@ void * connectionThread(void * data)
     Connection * con = (Connection *) data;
     while(con->status.is_alive)
     {
-        connectLoop(con);
+        connectionLoop(con);
     }
     return NULL;
 }
@@ -41,7 +42,7 @@ Connection * makeConnection(int socket)
     }
 
     retVal->socket = socket;
-    pthread_mutex_init(retVal->mtx, NULL);
+    pthread_mutex_init(&(retVal->mtx), NULL);
     retVal->status.is_alive = 1;
     retVal->thread = makeThread(connectionThread, retVal);
     return retVal;

@@ -42,7 +42,7 @@ struct addrinfo * getLocalAddressInfo(unsigned short port)
     if(addrErr = getaddrinfo(NULL, portString, &hint, &localInfo))
     {
         /* error returned by function call, print it */
-        fprintf(stdout, "getaddrinfo: %s\n", gai_strerror(addrErr));
+        fprintf(stderr, "getaddrinfo: %s\n", gai_strerror(addrErr));
         return NULL;
     }
     else

@@ -1,5 +1,8 @@
+#include <sys/socket.h>
+#include <stdio.h>
 #include "server.h"
 #include "serverFns.h"
+#include "connectionFns.h"
 #include "servLoop.h"
 
 int servLoop(Server * srv)
@@ -11,7 +14,7 @@ int servLoop(Server * srv)
     //it waits until a connection is formed, this, potentially, might delay shutdown
     thread_fd = accept(srv->socket, (struct sockaddr *)&conn_addr, &sin_size);
     //if the thread has failed to be spawned
-    if(!new_fd == -1)
+    if(!thread_fd == -1)
     {
         //print an error through stderr
         perror("accept");

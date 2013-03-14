@@ -10,7 +10,7 @@
 
 unsigned servSet(Server * srv, unsigned val)
 {
-    pthread_mutex_lock(&(srv->servMutex))
+    pthread_mutex_lock(&(srv->servMutex));
     switch(val)
     {
         case 1:
@@ -95,7 +95,7 @@ Server * advMakeServ(Server setup)
     srv->queueLen     = setup.queueLen;
     srv->conList      = setup.conList;
 
-    pthread_mutex_init(servMutex, NULL);
+    pthread_mutex_init(&(srv->servMutex), NULL);
 
     return srv;
 }
@@ -164,4 +164,30 @@ void addConnection(Server * srv, Connection * con)
     }
     return;
 }
+
+void reapConnections(Server * srv)
+{
+    void listCheck(Connection * previous, Connection * current);
+    if(srv->conList && srv->conList->next)
+    {
+        listCheck(srv->conList, srv->conList->next);
+    }
+    else if(srv->conList && !(srv->conList->next) && !(srv->conList->status.is_alive))
+    {
+        srv->conList = NULL;
+    }
+    return;
+}
+
+void listCheck(Connection * previous, Connection * current)
+{
+    if(current && !(current->status.is_alive))
+    {
+        previous->next = current->next;
+        delConnection(current);
+        return listCheck(previous, previous->next);
+    }
+    return;
+}
+
 
