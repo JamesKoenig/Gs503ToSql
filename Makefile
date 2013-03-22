@@ -1,8 +1,8 @@
 #massively unfinished
-CC = gcc
+CC = gcc 
 LD = gcc
-COMPFLAGS = -c -Os -pthread `mysql_config --cflags`
-LINKFLAGS = `mysql_config --libs` -Os -s
+COMPFLAGS = -c -O3 -pthread `mysql_config --cflags`
+LINKFLAGS = `mysql_config --libs` -O3 -s
 
 Gs503Interface: connectionFns.o connectLoop.o main.o packetSQL.o \
 	serverFns.o servLoop.o socket.o thread.o

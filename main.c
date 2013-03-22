@@ -14,10 +14,17 @@ int main()
 {
     Server * srv = NULL;
     //create the server object.
+    DEBUGOUT("creating server object\n");
     srv = makeServer(SERVPORT);
-    
+    if(!srv)
+    {
+        fprintf(stderr, "could not create server object\n");
+        return 1;
+    }
     //start the server
+    DEBUGOUT("starting server thread\n");
     startServer(srv);
+    DEBUGOUT("waiting for hell to freeze over\n");
     pthread_join(srv->serverThread, NULL);
     delServer(srv);
     free(srv);

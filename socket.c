@@ -11,6 +11,8 @@
 #include <netdb.h>
 #include <arpa/inet.h>
 
+#include "config.h"
+
 //automatically gets ipv6 or ipv4 information
 void * getInAddr(struct sockaddr *sa)
 {
@@ -48,6 +50,7 @@ struct addrinfo * getLocalAddressInfo(unsigned short port)
     else
     {
         /* call successful */
+        DEBUGOUT("getaddrinfo successful\n");
         return localInfo;
     }
 }
@@ -59,9 +62,12 @@ int bindToAddress(struct addrinfo * addr)
 {
     int sfd = 0;
     int optVal = 1;
-    if(addr = NULL) return 0; //code equivalent of foreshadowing
+    if(!addr) return 0; //code equivalent of foreshadowing
     /* The if call from hell.  Feel free to make fun of me for this, or change it yourself */
-    else if(
+    else
+    {
+        DEBUGOUT("Binding to socket\n");
+        if(
             // open the socket file descriptor
             (sfd = socket(addr->ai_family, addr->ai_socktype, addr->ai_protocol)) != -1 &&
             // set the socket to keep alive 
@@ -72,6 +78,7 @@ int bindToAddress(struct addrinfo * addr)
     {
         //if that massive if-statement went through, that means we're home free and the socket
         //is bound properly. return the socket descriptor
+        DEBUGOUT("bind successful\n");
         return sfd;
     }
     else 
@@ -82,6 +89,7 @@ int bindToAddress(struct addrinfo * addr)
         close(sfd);
         //call this function on the next member of the list THAT'S RIGHT, RECURSION!
         return bindToAddress(addr->ai_next);
+    }
     }
 }
 
@@ -102,6 +110,6 @@ int listenOnPort(unsigned short port)
    sock_fd = bindToAddress(addrInfo);
 
    freeaddrinfo(addrInfo);
-
+   DEBUGOUT("listen on port successful\n");
    return sock_fd;
 }

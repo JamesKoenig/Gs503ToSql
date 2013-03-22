@@ -1,4 +1,5 @@
 #include <stdlib.h>
+#include <string.h>
 #include "serverFns.h"
 #include "server.h"
 #include "thread.h"
@@ -36,7 +37,9 @@ unsigned servOff(Server * srv)
 
 unsigned servStatus(Server * srv)
 {
+    pthread_mutex_lock(&(srv->servMutex));
     return srv->controls.vals.power;
+    pthread_mutex_unlock(&(srv->servMutex));
 }
 
 void delConnections(Server * srv)
@@ -97,6 +100,7 @@ Server * advMakeServ(Server setup)
 
     pthread_mutex_init(&(srv->servMutex), NULL);
 
+    DEBUGOUT("advMakeServ successful\n");
     return srv;
 }
 
@@ -105,7 +109,7 @@ Server * makeServer(unsigned short port)
     //start with the empty server
     Server srv;
 
-    servOff(&srv);
+    memset(&srv.controls, 0, sizeof(srv.controls));
     srv.socket       = listenOnPort(port);
     srv.port         = port;
     //srv.errOut     = stderr;
@@ -115,6 +119,7 @@ Server * makeServer(unsigned short port)
 
     if(!(srv.socket)) return NULL;
 
+    DEBUGOUT("makeServer successful\n");
     return advMakeServ(srv);
 }
 
@@ -129,11 +134,16 @@ int startServer(Server * srv)
     if(!(srv->serverThread))
     {
         //turn off the server power flag
+        DEBUGOUT("startserver unsuccesful\n");
         servOff(srv);
         return 0;
     }
     //server is now running, return success
-    else return 1;
+    else
+    {
+        DEBUGOUT("startserver successful\n");
+        return 1;
+    }
 }
 
 int stopServer(Server * srv)

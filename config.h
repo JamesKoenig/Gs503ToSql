@@ -13,3 +13,11 @@
 
 /* buffer length is the same across all files */
 #define BUFFLEN 255
+
+//#define debugout 1
+#undef debugout
+#ifdef debugout
+#define DEBUGOUT(...) fprintf(stdout, __VA_ARGS__)
+#else
+#define DEBUGOUT(...)
+#endif
