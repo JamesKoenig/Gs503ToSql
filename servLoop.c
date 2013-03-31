@@ -28,8 +28,11 @@ int servLoop(Server * srv)
     {
         DEBUGOUT("spawning thread with %d file descriptor\n", thread_fd);
         addConnection(srv, makeConnection(thread_fd));
+        DEBUGOUT("THREAD SPAWNED\n");
     }
 
+    DEBUGOUT("reaping connections!\n");
     reapConnections(srv);
+    DEBUGOUT("connections reaped, returning to loop. server is %s\n", srv->controls.vals.power ? "alive": "dead");
     return 1;
 }

@@ -1,4 +1,5 @@
 #include <stdio.h>          //for perror
+#include <sys/socket.h>
 #include "connection.h"
 #include "connectLoop.h"
 #include "packetSQL.h"
@@ -24,6 +25,7 @@ int connectionLoop(Connection * con)
         default:
             buf[bytes] = '\0';
             parseBuffer(buf, bytes);
+            send(con->socket, buf, bytes, 0);
             return 1;
     }
 }

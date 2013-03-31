@@ -11,17 +11,6 @@
 #include <netdb.h>
 #include <arpa/inet.h>
 
-#include "config.h"
-
-//automatically gets ipv6 or ipv4 information
-void * getInAddr(struct sockaddr *sa)
-{
-    if(sa->sa_family == AF_INET)
-    {
-        return &(((struct sockaddr_in *) sa)->sin_addr);
-    }
-    return &(((struct sockaddr_in6 *) sa)->sin6_addr); 
-}
 
 /* returns the address info of a connection to localhost on a given port */
 struct addrinfo * getLocalAddressInfo(unsigned short port)
@@ -41,7 +30,8 @@ struct addrinfo * getLocalAddressInfo(unsigned short port)
     sprintf(portString,"%d", port);
     
     /* populate the linked list */
-    if(addrErr = getaddrinfo(NULL, portString, &hint, &localInfo))
+    addrErr = getaddrinfo(NULL, portString, &hint, &localInfo);
+    if(addrErr)
     {
         /* error returned by function call, print it */
         fprintf(stderr, "getaddrinfo: %s\n", gai_strerror(addrErr));
@@ -50,7 +40,6 @@ struct addrinfo * getLocalAddressInfo(unsigned short port)
     else
     {
         /* call successful */
-        DEBUGOUT("getaddrinfo successful\n");
         return localInfo;
     }
 }
@@ -64,10 +53,7 @@ int bindToAddress(struct addrinfo * addr)
     int optVal = 1;
     if(!addr) return 0; //code equivalent of foreshadowing
     /* The if call from hell.  Feel free to make fun of me for this, or change it yourself */
-    else
-    {
-        DEBUGOUT("Binding to socket\n");
-        if(
+    else if(
             // open the socket file descriptor
             (sfd = socket(addr->ai_family, addr->ai_socktype, addr->ai_protocol)) != -1 &&
             // set the socket to keep alive 
@@ -75,30 +61,29 @@ int bindToAddress(struct addrinfo * addr)
             setsockopt(sfd, SOL_SOCKET, SO_KEEPALIVE, &optVal, sizeof(int))       != -1 &&
             bind(sfd, addr->ai_addr, addr->ai_addrlen)                            != -1
            )
-    {
+        {
         //if that massive if-statement went through, that means we're home free and the socket
         //is bound properly. return the socket descriptor
-        DEBUGOUT("bind successful\n");
-        return sfd;
-    }
-    else 
-    {
-        //there's like 5 ways this function could've gone wrong, let's at least print one
-        perror("BindToAddress");
-        //close the socket file descriptor
-        close(sfd);
-        //call this function on the next member of the list THAT'S RIGHT, RECURSION!
-        return bindToAddress(addr->ai_next);
-    }
-    }
+            return sfd;
+        }
+        else 
+        {
+            //there's like 5 ways this function could've gone wrong, let's at least print one
+            perror("BindToAddress");
+            //close the socket file descriptor
+            close(sfd);
+            //call this function on the next member of the list THAT'S RIGHT, RECURSION!
+            return bindToAddress(addr->ai_next);
+        }
 }
+
 
 // returns a socket file descriptor connected to the given port
 int listenOnPort(unsigned short port)
 {
    int sock_fd;
 
-   struct addrinfo *addrInfo, *iter_p;
+   struct addrinfo *addrInfo;
 
    //get the address info to open a socket at the given port
    addrInfo = getLocalAddressInfo(port);
@@ -110,6 +95,5 @@ int listenOnPort(unsigned short port)
    sock_fd = bindToAddress(addrInfo);
 
    freeaddrinfo(addrInfo);
-   DEBUGOUT("listen on port successful\n");
    return sock_fd;
 }

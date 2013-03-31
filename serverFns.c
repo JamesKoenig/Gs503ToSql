@@ -37,9 +37,11 @@ unsigned servOff(Server * srv)
 
 unsigned servStatus(Server * srv)
 {
+    unsigned retVal;
     pthread_mutex_lock(&(srv->servMutex));
-    return srv->controls.vals.power;
-    pthread_mutex_unlock(&(srv->servMutex));
+    retVal = srv->controls.vals.power;
+    pthread_mutex_unlock(&srv->servMutex);
+    return retVal;
 }
 
 void delConnections(Server * srv)
@@ -52,7 +54,8 @@ void delConnections(Server * srv)
         //stop the connection thread
         delConnection(current);
         
-        return delConnections(srv);
+        delConnections(srv);
+        return;
     }
     else return;
 }
@@ -72,6 +75,7 @@ void * serverThread(void * args)
     //all clear, run the main loop function
     while(servStatus(me))
     {
+        DEBUGOUT("calling servLoop()");
         servLoop(me);
     }
 
@@ -167,6 +171,7 @@ void delServer(Server * srv)
 
 void addConnection(Server * srv, Connection * con)
 {
+    DEBUGOUT("adding connection\n");
     if(con)
     {
             con->next = srv->conList;
@@ -178,24 +183,29 @@ void addConnection(Server * srv, Connection * con)
 void reapConnections(Server * srv)
 {
     void listCheck(Connection * previous, Connection * current);
+    DEBUGOUT("in reapConnections\n");
     if(srv->conList && srv->conList->next)
     {
         listCheck(srv->conList, srv->conList->next);
     }
     else if(srv->conList && !(srv->conList->next) && !(srv->conList->status.is_alive))
     {
+        delConnection(srv->conList);
         srv->conList = NULL;
     }
+    else DEBUGOUT("NOTHING\n");
+    DEBUGOUT("reapConnections returning\n");
     return;
 }
 
 void listCheck(Connection * previous, Connection * current)
 {
+    DEBUGOUT("in listCheck");
     if(current && !(current->status.is_alive))
     {
         previous->next = current->next;
         delConnection(current);
-        return listCheck(previous, previous->next);
+        listCheck(previous, previous->next);
     }
     return;
 }

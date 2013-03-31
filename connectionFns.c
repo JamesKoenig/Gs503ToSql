@@ -1,9 +1,11 @@
 #include <stdio.h>          //for perror
 #include <stdlib.h>
+#include "socket.h"
 #include "connectionFns.h"
 #include "connection.h"
 #include "thread.h"
 #include "connectLoop.h"
+#include "config.h"
 
 void stopConnection(Connection * con)
 {
@@ -27,6 +29,8 @@ void * connectionThread(void * data)
     {
         connectionLoop(con);
     }
+    //TODO delete the connection object here
+    DEBUGOUT("connection is %s\n", con->status.is_alive ? "alive": "dead");
     return NULL;
 }
 

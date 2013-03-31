@@ -8,6 +8,8 @@
  */
 
 #include "packetSQL.h"
+#include <my_global.h>
+#include <mysql.h>
 
 /*
  * Packet Parser

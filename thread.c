@@ -14,7 +14,8 @@ pthread_t makeThread(void * (*f)(void * arg), void * arg)
     /* initialize and set the thread attributes */
     pthread_attr_init(&attr);
     pthread_attr_setdetachstate(&attr, PTHREAD_CREATE_JOINABLE);
-    if(err = pthread_create(&retVal, &attr, f, arg))
+    err = pthread_create(&retVal, &attr, f, arg);
+    if(err)
     {
         fprintf(stderr, "ERROR: failed to spawn thread, err#: %d\n", err);
         pthread_attr_destroy(&attr);

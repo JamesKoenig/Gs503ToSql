@@ -12,3 +12,6 @@ maintest.c
 
 #do not include vim swapfiles
 *.swp
+
+#ignore the binary itself
+Gs503Interface
